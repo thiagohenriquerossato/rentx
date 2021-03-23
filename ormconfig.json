@@ -4,5 +4,9 @@
   "host":"172.23.0.3",
   "username":"docker",
   "password":"ignite",
-  "database":"rentx"
+  "database":"rentx",
+  "migrations": ["./src/database/migrations/*.ts"],
+  "cli":{
+    "migrationsDir":"./src/database/migrations"
+  }
 }
