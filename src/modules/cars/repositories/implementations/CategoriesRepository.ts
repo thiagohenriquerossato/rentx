@@ -1,4 +1,4 @@
-import { Category } from "../../model/Category";
+import { Category } from "../../entities/Category";
 import {
   ICategoriesRepository,
   ICreateCategoryDTO,
@@ -17,6 +17,7 @@ class CategoriesRepository implements ICategoriesRepository {
     if (!CategoriesRepository.INSTANCE) {
       CategoriesRepository.INSTANCE = new CategoriesRepository();
     }
+
     return CategoriesRepository.INSTANCE;
   }
 
@@ -25,7 +26,9 @@ class CategoriesRepository implements ICategoriesRepository {
 
     Object.assign(category, {
       name,
+
       description,
+
       created_at: new Date(),
     });
 
@@ -38,6 +41,7 @@ class CategoriesRepository implements ICategoriesRepository {
 
   findByName(name: string): Category {
     const category = this.categories.find((category) => category.name === name);
+
     return category;
   }
 }
