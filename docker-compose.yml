@@ -13,6 +13,9 @@ services:
       - POSTGRES_DB=rentx
     volumes:
       - pgdata:/data/postgres
+    networks:
+      backend:
+        ipv4_address: 172.23.0.3
   app:
     build: .
     container_name: rentx
@@ -20,7 +23,16 @@ services:
       - 3333:3333
     volumes:
       - .:/user/app
+    networks:
+      - backend
 
 volumes:
   pgdata:
     driver: local
+
+networks:
+  backend:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.23.0.0/24
