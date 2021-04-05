@@ -26,11 +26,8 @@ class CreateUserUserCase {
     const passwordHash = await hash(password, 8);
     await this.usersRepository.create({
       name,
-
       email,
-
       password: passwordHash,
-
       driver_license,
     });
   }
