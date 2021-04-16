@@ -1,4 +1,3 @@
-import { carsRoutes } from "../../../../shared/infra/http/routes/cars.routes";
 import { ICreateCarDTO } from "../../dtos/ICreateCarDTO";
 import { Car } from "../../infra/typeorm/entities/Car";
 import { ICarsRepository } from "../ICarsRepository";
@@ -14,6 +13,8 @@ class CarsRepositoryInMemory implements ICarsRepository {
     category_id,
     fine_amount,
     license_plate,
+    specifications,
+    id,
   }: ICreateCarDTO): Promise<Car> {
     const car = new Car();
     Object.assign(car, {
@@ -24,6 +25,8 @@ class CarsRepositoryInMemory implements ICarsRepository {
       category_id,
       fine_amount,
       license_plate,
+      specifications,
+      id,
     });
     this.cars.push(car);
     return car;
@@ -50,6 +53,11 @@ class CarsRepositoryInMemory implements ICarsRepository {
       return null;
     });
     return cars;
+  }
+
+  async findById(car_id: string): Promise<Car> {
+    const car = this.cars.find((car) => car.id === car_id);
+    return car;
   }
 }
 
