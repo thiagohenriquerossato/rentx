@@ -49,7 +49,7 @@ describe("List Cars", () => {
     const cars = await listAvailableCarsUseCase.execute({ brand: "Car brand" });
     expect(cars).toEqual([car2]);
   });
-  it("should be able to list all available cars by brand", async () => {
+  it("should be able to list all available cars by category", async () => {
     const car3 = await carsRepositoryInMemory.create({
       name: "Car3",
       description: "Car3 description",
