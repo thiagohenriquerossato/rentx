@@ -2,8 +2,11 @@ import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { inject, injectable } from "tsyringe";
 
+import auth from "../../../../config/auth";
+import { DayjsDateProvider } from "../../../../shared/container/providers/DateProvider/implementations/DayjsDateProvider";
 import { AppError } from "../../../../shared/errors/AppError";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
+import { IUsersTokensRepository } from "../../repositories/IUsersTokensRepository";
 
 interface IRequest {
   email: string;
@@ -15,12 +18,17 @@ interface IResponse {
     email: string;
   };
   token: string;
+  refresh_token: string;
 }
 @injectable()
 class AuthenticateUserUseCase {
   constructor(
     @inject("UsersRepository")
-    private usersRepository: IUsersRepository
+    private usersRepository: IUsersRepository,
+    @inject("UsersTokenRepository")
+    private usersTokensRepository: IUsersTokensRepository,
+    @inject("DayjsDateProvider")
+    private dayjsDateProvider: DayjsDateProvider
   ) {}
   async execute({ email, password }: IRequest): Promise<IResponse> {
     const user = await this.usersRepository.findByEmail(email);
@@ -35,13 +43,28 @@ class AuthenticateUserUseCase {
       throw new AppError("Email or Password incorrect");
     }
 
-    const token = sign({}, "81765114eb0beae31f1496f007cc183f", {
+    const token = sign({}, auth.secret_token, {
       subject: user.id,
-      expiresIn: "1d",
+      expiresIn: auth.expires_in_token,
+    });
+
+    const refresh_token = sign({ email }, auth.secret_refresh_token, {
+      subject: user.id,
+      expiresIn: auth.expires_in_refresh_token,
+    });
+
+    const refresh_token_expires_date = this.dayjsDateProvider.addDays(
+      auth.expires_in_refresh_token_days
+    );
+    await this.usersTokensRepository.create({
+      user_id: user.id,
+      expires_date: refresh_token_expires_date,
+      refresh_token,
     });
 
     const tokenReturn: IResponse = {
       token,
+      refresh_token,
       user: {
         name: user.name,
         email: user.email,
