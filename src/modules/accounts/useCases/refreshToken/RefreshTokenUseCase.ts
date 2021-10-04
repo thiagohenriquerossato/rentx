@@ -1,5 +1,5 @@
 import { verify, sign } from "jsonwebtoken";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
 import auth from "../../../../config/auth";
 import { DayjsDateProvider } from "../../../../shared/container/providers/DateProvider/implementations/DayjsDateProvider";
@@ -10,6 +10,7 @@ interface IPayload {
   sub: string;
   email: string;
 }
+@injectable()
 class RefreshTokenUseCase {
   constructor(
     @inject("UsersTokensRepository")
